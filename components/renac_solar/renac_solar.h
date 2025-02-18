@@ -19,7 +19,6 @@ namespace esphome {
             void dump_config() override;
             void set_inverter_status_sensor(Sensor *sensor) { m_inverter_status = sensor; }
             void set_grid_frequency_sensor(Sensor *sensor) { m_grid_frequency = sensor; }
-            void set_grid_active_power_sensor(Sensor *sensor) { m_grid_active_power = sensor; }
             void set_pv_active_power_sensor(Sensor *sensor) { m_pv_active_power = sensor; }
             void set_today_production_sensor(Sensor *sensor) { m_today_production = sensor; }
             void set_total_production_sensor(Sensor *sensor) { m_total_production = sensor; }
@@ -48,7 +47,6 @@ namespace esphome {
             SensorGroup m_strings[2];
             Sensor *m_inverter_status;
             Sensor *m_grid_frequency;
-            Sensor *m_grid_active_power;
             Sensor *m_pv_active_power;
             Sensor *m_today_production;
             Sensor *m_total_production;

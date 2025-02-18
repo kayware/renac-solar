@@ -110,7 +110,7 @@ namespace esphome {
                 update_sensor(m_inverter_status, read_reg16(off + 0, 1));
                 update_sensor(m_today_production, read_reg16(off + 14, DECIMAL_ONE));
                 update_sensor(m_total_production, read_reg16(off + 18, DECIMAL_ONE));
-                update_sensor(m_active_power, read_reg32(off + 26, 1));
+                update_sensor(m_pv_active_power, read_reg32(off + 26, 1));
                 update_sensor(m_grid_frequency, read_reg16(off + 40, DECIMAL_TWO));
 
                 for (size_t j = 0; j < 3; j++) {
