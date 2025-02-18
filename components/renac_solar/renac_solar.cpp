@@ -51,5 +51,58 @@ namespace esphome {
             else
                 ESP_LOGW(TAG, "Unknown response code: 0x%02X", data[1]);
         }
+
+        void RenacSolar::parse_registers(const std::vector<uint8_t> &data) {
+            auto read8 = [&](size_t off) -> uint8_t {
+                return data[off];
+            };
+
+            auto read16 = [&](size_t off) -> uint16_t {
+                return encode_uint16(data[off], data[off + 1]);
+            };
+
+            auto read_reg16 = [&](size_t off, float unit) -> float {
+                return read16(off) * unit;
+            };
+
+            auto read_reg32 = [&](size_t off, float unit) -> float {
+                return encode_uint32(data[off], data[off + 1], data[off + 2], data[off + 3]) * unit;
+            };
+
+            auto read_generic_info = [&](size_t off) {
+
+            };
+
+            auto read_string_info = [&](size_t off) {
+
+            };
+
+            auto read_temperature_info = [&](size_t off) {
+
+            };
+
+            auto region_count = data[1];
+            size_t i = 0;
+            while (i < region_count) {
+                auto start_address = read16(i);
+                auto num_registers = read8(i + 2);
+                switch (start_address) {
+                case 0x2904:
+                    read_generic_info(i + 3);
+                    break;
+                case 0x2a31:
+                    read_string_info(i + 3);
+                    break;
+                case 0x2ee0:
+                    read_temperature_info(i + 3);
+                    break;
+                default:
+                    ESP_LOGW("Unknown register region offset: 0x%04X", start_address);
+                    break;
+                }
+
+                i += (size_t)num_registers + 3;
+            }
+        }
     }
 }
