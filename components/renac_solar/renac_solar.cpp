@@ -5,7 +5,6 @@ namespace esphome {
     namespace renac_solar {
         static const char *TAG = "renac_solar";
         static const uint8_t MODBUS_READ_MULTIPLE = 0x65;
-        static const uint8_t MODBUS_ERROR_READING = 0xE5;
         static const std::vector<uint8_t> MODBUS_PAYLOAD = {
             0x01,                                           /* Device address */
             MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
@@ -41,11 +40,14 @@ namespace esphome {
             if (!m_last_send)
                 return;
             m_last_send = 0;
-
-            if (data[1] == MODBUS_READ_MULTIPLE)
-                parse_registers(data);
-            else if (data[1] == MODBUS_ERROR_READING)
+            
+            if (data.size() < 80) {
                 log_error(data);
+                return;
+            }
+
+            if (data[0] == MODBUS_READ_MULTIPLE)
+                parse_registers(data);
             else
                 ESP_LOGW(TAG, "Unknown response code: 0x%02X", data[1]);
         }
