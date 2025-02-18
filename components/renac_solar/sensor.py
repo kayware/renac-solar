@@ -184,7 +184,7 @@ async def to_code(config):
         for sensor_type in PHASE_SENSORS:
             if sensor_type in phase_config:
                 sens = await sensor.new_sensor(phase_config[sensor_type])
-                cg.add(getattr(var, f"set_{sensor_type}_sensor")(i, sens))
+                cg.add(getattr(var, f"set_phase_{sensor_type}_sensor")(i, sens))
 
     for i, pv in enumerate([CONF_PV1, CONF_PV2]):
         if pv not in config:
