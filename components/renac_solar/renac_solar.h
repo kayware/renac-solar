@@ -31,6 +31,9 @@ namespace esphome {
             void set_string_voltage_sensor(uint8_t id, Sensor *sensor) { m_strings[id].m_voltage = sensor; }
             void set_string_current_sensor(uint8_t id, Sensor *sensor) { m_strings[id].m_current = sensor; }
             void set_string_active_power_sensor(uint8_t id, Sensor *sensor) { m_strings[id].m_active_power = sensor; }
+
+            void parse_registers(const std::vector<uint8_t> &data);
+            void log_error(const std::vector<uint8_t> &data);
         protected:
             struct SensorGroup {
                 Sensor *m_voltage { nullptr };
