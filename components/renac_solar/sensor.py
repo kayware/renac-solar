@@ -166,7 +166,7 @@ async def to_code(config):
 
     if CONF_TOTAL_ENERGY_PRODUCTION in config:
         sens = await sensor.new_sensor(config[CONF_TOTAL_ENERGY_PRODUCTION])
-        cg.add(var.set_total_energy_production_sensor(sens))
+        cg.add(var.set_total_production_sensor(sens))
 
     if CONF_INVERTER_MODULE_TEMP in config:
         sens = await sensor.new_sensor(config[CONF_INVERTER_MODULE_TEMP])
