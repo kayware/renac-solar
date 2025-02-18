@@ -76,19 +76,23 @@ namespace esphome {
 
             auto read_generic_info = [&](size_t off) {
                 update_sensor(m_inverter_status, read_reg16(off + 0, 1));
-                update_sensor(m_today_production, read_reg16(off + 7, DECIMAL_ONE));
-                update_sensor(m_total_production, read_reg16(off + 9, DECIMAL_ONE));
-                update_sensor(m_active_power, read_reg32(off + 13, 1));
-                update_sensor(m_grid_frequency, read_reg16(off + 20, DECIMAL_TWO));
+                update_sensor(m_today_production, read_reg16(off + 14, DECIMAL_ONE));
+                update_sensor(m_total_production, read_reg16(off + 18, DECIMAL_ONE));
+                update_sensor(m_active_power, read_reg32(off + 26, 1));
+                update_sensor(m_grid_frequency, read_reg16(off + 40, DECIMAL_TWO));
 
-                for (size_t i = 0; i < 3; i++) {
-                    update_sensor(m_phases[i].m_voltage, read_reg16(off + 18 + i*3, DECIMAL_ONE));
-                    update_sensor(m_phases[i].m_current, read_reg16(off + 19 + i*3, DECIMAL_ONE));
+                for (size_t j = 0; j < 3; j++) {
+                    update_sensor(m_phases[j].m_voltage, read_reg16(off + 36 + j*6, DECIMAL_ONE));
+                    update_sensor(m_phases[j].m_current, read_reg16(off + 38 + j*6, DECIMAL_ONE));
                 }
             };
 
             auto read_string_info = [&](size_t off) {
-
+                for (size_t j = 0; j < 2; j++) {
+                    update_sensor(m_strings[j].m_voltage, read_reg16(off + j * 8, DECIMAL_ONE));
+                    update_sensor(m_strings[j].m_current, read_reg16(off + 2 + j * 8, DECIMAL_ONE));
+                    update_sensor(m_strings[j].m_active_power, read_reg32(off + 4 + j * 8, DECIMAL_ONE));
+                }
             };
 
             auto read_temperature_info = [&](size_t off) {
