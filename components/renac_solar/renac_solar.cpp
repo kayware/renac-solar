@@ -80,7 +80,7 @@ namespace esphome {
                     break;
                 }
             } else {
-                ESP_LOGW("Received %ld bytes, expected a longer response.", data.size());
+                ESP_LOGW(TAG, "Received %ld bytes, expected a longer response.", data.size());
             }
         }
 
@@ -128,8 +128,8 @@ namespace esphome {
             };
 
             auto read_temperature_info = [&](size_t off) {
-                update_sensor(m_ambient_temperature, read16(off + 2, DECIMAL_ONE));
-                update_sensor(m_inverter_temperature, read16(off + 4, DECIMAL_ONE));
+                update_sensor(m_ambient_temperature, read_reg16(off + 2, DECIMAL_ONE));
+                update_sensor(m_inverter_temperature, read_reg16(off + 4, DECIMAL_ONE));
             };
 
             auto region_count = data[1];
@@ -148,7 +148,7 @@ namespace esphome {
                     read_temperature_info(i + 3);
                     break;
                 default:
-                    ESP_LOGW("Unknown register region offset: 0x%04X", start_address);
+                    ESP_LOGW(TAG, "Unknown register region offset: 0x%04X", start_address);
                     break;
                 }
 

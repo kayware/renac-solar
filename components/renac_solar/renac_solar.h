@@ -10,9 +10,9 @@
 
 namespace esphome {
     namespace renac_solar {
+        using sensor::Sensor;
         class RenacSolar : public PollingComponent, public modbus::ModbusDevice {
         public:
-            using sensor::Sensor;
             void loop() override;
             void update() override;
             void on_modbus_data(const std::vector<uint8_t> &data) override;
