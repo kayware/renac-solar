@@ -69,8 +69,22 @@ namespace esphome {
                 return encode_uint32(data[off], data[off + 1], data[off + 2], data[off + 3]) * unit;
             };
 
-            auto read_generic_info = [&](size_t off) {
+            auto update_sensor = [&](Sensor *s, float value) {
+                if (s)
+                    s->publish_state(value);
+            };
 
+            auto read_generic_info = [&](size_t off) {
+                update_sensor(m_inverter_status, read_reg16(off + 0, 1));
+                update_sensor(m_today_production, read_reg16(off + 7, DECIMAL_ONE));
+                update_sensor(m_total_production, read_reg16(off + 9, DECIMAL_ONE));
+                update_sensor(m_active_power, read_reg32(off + 13, 1));
+                update_sensor(m_grid_frequency, read_reg16(off + 20, DECIMAL_TWO));
+
+                for (size_t i = 0; i < 3; i++) {
+                    update_sensor(m_phases[i].m_voltage, read_reg16(off + 18 + i*3, DECIMAL_ONE));
+                    update_sensor(m_phases[i].m_current, read_reg16(off + 19 + i*3, DECIMAL_ONE));
+                }
             };
 
             auto read_string_info = [&](size_t off) {
