@@ -5,6 +5,8 @@ namespace esphome {
     namespace renac_solar {
         static const char *TAG = "renac_solar";
         static const uint8_t MODBUS_READ_MULTIPLE = 0x65;
+        static const float DECIMAL_ONE = 0.1f;
+        static const float DECIMAL_TWO = 0.01f;
         static const std::vector<uint8_t> MODBUS_PAYLOAD = {
             0x01,                                           /* Device address */
             MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
@@ -91,12 +93,13 @@ namespace esphome {
                 for (size_t j = 0; j < 2; j++) {
                     update_sensor(m_strings[j].m_voltage, read_reg16(off + j * 8, DECIMAL_ONE));
                     update_sensor(m_strings[j].m_current, read_reg16(off + 2 + j * 8, DECIMAL_ONE));
-                    update_sensor(m_strings[j].m_active_power, read_reg32(off + 4 + j * 8, DECIMAL_ONE));
+                    update_sensor(m_strings[j].m_active_power, read_reg32(off + 4 + j * 8, 1));
                 }
             };
 
             auto read_temperature_info = [&](size_t off) {
-
+                update_sensor(m_ambient_temperature, read16(off + 2, DECIMAL_ONE));
+                update_sensor(m_inverter_temperature, read16(off + 4, DECIMAL_ONE));
             };
 
             auto region_count = data[1];
