@@ -54,6 +54,36 @@ namespace esphome {
                 ESP_LOGW(TAG, "Unknown response code: 0x%02X", data[1]);
         }
 
+        void RenacSolar::log_error(const std::vector<uint8_t> &data) {
+            if (data.size() == 1) {
+                switch (data[0]) {
+                case 0x01:
+                    ESP_LOGE(TAG, "Got exception: illegal function code!");
+                    break;
+                case 0x02:
+                    ESP_LOGE(TAG, "Got exception: illegal data address!");
+                    break;
+                case 0x03:
+                    ESP_LOGE(TAG, "Got exception: illegal data value!");
+                    break;
+                case 0x04:
+                    ESP_LOGE(TAG, "Got exception: data save failed!");
+                    break;
+                case 0x06:
+                    ESP_LOGE(TAG, "Got exception: slave device busy!");
+                    break;
+                case 0x08:
+                    ESP_LOGE(TAG, "Got exception: storage parity error!");
+                    break;
+                default:
+                    ESP_LOGE(TAG, "Got unknown exception: 0x%02X", data[0]);
+                    break;
+                }
+            } else {
+                ESP_LOGW("Received %ld bytes, expected a longer response.", data.size());
+            }
+        }
+
         void RenacSolar::parse_registers(const std::vector<uint8_t> &data) {
             auto read8 = [&](size_t off) -> uint8_t {
                 return data[off];
