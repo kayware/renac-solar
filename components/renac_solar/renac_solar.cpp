@@ -155,5 +155,10 @@ namespace esphome {
                 i += (size_t)num_registers + 3;
             }
         }
+
+        void RenacSolar::dump_config() {
+            ESP_LOGCONFIG(TAG, "Renac Solar:");
+            ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
+        }
     }
 }
