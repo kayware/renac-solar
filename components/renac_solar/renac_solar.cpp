@@ -49,7 +49,7 @@ namespace esphome {
             //     return;
             // }
 
-            if (data[0] == MODBUS_READ_MULTIPLE)
+            if (data[0] == 0x04)
                 parse_registers(data);
             else
                 ESP_LOGW(TAG, "Unknown response code: 0x%02X", data[1]);
@@ -86,7 +86,6 @@ namespace esphome {
         }
 
         void RenacSolar::parse_registers(const std::vector<uint8_t> &data) {
-            return;
             auto read8 = [&](size_t off) -> uint8_t {
                 return data[off];
             };
@@ -134,20 +133,20 @@ namespace esphome {
                 update_sensor(m_inverter_temperature, read_reg16(off + 4, DECIMAL_ONE));
             };
 
-            auto region_count = 1;//data[1];
+            auto region_count = data[0];
             size_t i = 0;
             while (i < region_count) {
-                auto start_address = 0x2904;//read16(i);
-                auto num_registers = read8(i + 0);
+                auto start_address = read16(i + 1);
+                auto num_registers = read8(i + 3);
                 switch (start_address) {
                 case 0x2904:
-                    read_generic_info(i + 1);
+                    read_generic_info(i + 4);
                     break;
                 case 0x2a31:
-                    read_string_info(i + 1);
+                    read_string_info(i + 4);
                     break;
                 case 0x2ee0:
-                    read_temperature_info(i + 1);
+                    read_temperature_info(i + 4);
                     break;
                 default:
                     ESP_LOGW(TAG, "Unknown register region offset: 0x%04X", start_address);
