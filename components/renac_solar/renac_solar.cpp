@@ -8,15 +8,16 @@ namespace esphome {
         static const float DECIMAL_ONE = 0.1f;
         static const float DECIMAL_TWO = 0.01f;
         static const std::vector<uint8_t> MODBUS_PAYLOAD = {
-            0x01,                                           /* Device address */
-            MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
-            0x01,                                           /* Read 3 segments */
-            0x29, 0x04,                                     /* Start of region #1 (10500) */
-            0x00, 0x26,                                     /* 26 registers in region #1 */
-            //0x2a, 0x31,                                     /* Start of region #2 (10801) */
-            //0x00, 0x08,                                     /* 8 registers in region #2 */
-            //0x2e, 0xe0,                                     /* Start of region #3 (12000) */
-            //0x00, 0x03                                      /* 3 registers in region #3 */
+            // 0x01,                                           /* Device address */
+            // MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
+            // 0x01,                                           /* Read 3 segments */
+            // 0x29, 0x04,                                     /* Start of region #1 (10500) */
+            // 0x00, 0x26,                                     /* 26 registers in region #1 */
+            // //0x2a, 0x31,                                     /* Start of region #2 (10801) */
+            // //0x00, 0x08,                                     /* 8 registers in region #2 */
+            // //0x2e, 0xe0,                                     /* Start of region #3 (12000) */
+            // //0x00, 0x03                                      /* 3 registers in region #3 */
+            0x01, 0x65, 0x04, 0x29, 0x04, 0x00, 0x1B, 0x29, 0xCC, 0x00, 0x10, 0x2A, 0x30, 0x00, 0x11, 0x2E, 0xE0, 0x00, 0x06, 0xFF, 0xD7
         };
 
         void RenacSolar::loop() {
@@ -85,6 +86,7 @@ namespace esphome {
         }
 
         void RenacSolar::parse_registers(const std::vector<uint8_t> &data) {
+            return;
             auto read8 = [&](size_t off) -> uint8_t {
                 return data[off];
             };
