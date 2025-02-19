@@ -10,13 +10,13 @@ namespace esphome {
         static const std::vector<uint8_t> MODBUS_PAYLOAD = {
             0x01,                                           /* Device address */
             MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
-            0x03,                                           /* Read 3 segments */
+            0x01,                                           /* Read 3 segments */
             0x29, 0x04,                                     /* Start of region #1 (10500) */
             0x00, 0x26,                                     /* 26 registers in region #1 */
-            0x2a, 0x31,                                     /* Start of region #2 (10801) */
-            0x00, 0x08,                                     /* 8 registers in region #2 */
-            0x2e, 0xe0,                                     /* Start of region #3 (12000) */
-            0x00, 0x03                                      /* 3 registers in region #3 */
+            //0x2a, 0x31,                                     /* Start of region #2 (10801) */
+            //0x00, 0x08,                                     /* 8 registers in region #2 */
+            //0x2e, 0xe0,                                     /* Start of region #3 (12000) */
+            //0x00, 0x03                                      /* 3 registers in region #3 */
         };
 
         void RenacSolar::loop() {
