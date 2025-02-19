@@ -5,19 +5,22 @@ namespace esphome {
     namespace renac_solar {
         static const char *TAG = "renac_solar";
         static const uint8_t MODBUS_READ_MULTIPLE = 0x65;
+        static const uint8_t RENAC_REGION_COUNT = 0x04;
         static const float DECIMAL_ONE = 0.1f;
         static const float DECIMAL_TWO = 0.01f;
         static const std::vector<uint8_t> MODBUS_PAYLOAD = {
-            // 0x01,                                           /* Device address */
-            // MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
-            // 0x01,                                           /* Read 3 segments */
-            // 0x29, 0x04,                                     /* Start of region #1 (10500) */
-            // 0x00, 0x26,                                     /* 26 registers in region #1 */
-            // //0x2a, 0x31,                                     /* Start of region #2 (10801) */
-            // //0x00, 0x08,                                     /* 8 registers in region #2 */
-            // //0x2e, 0xe0,                                     /* Start of region #3 (12000) */
-            // //0x00, 0x03                                      /* 3 registers in region #3 */
-            0x01, 0x65, 0x04, 0x29, 0x04, 0x00, 0x1B, 0x29, 0xCC, 0x00, 0x10, 0x2A, 0x30, 0x00, 0x11, 0x2E, 0xE0, 0x00, 0x06, 0xFF, 0xD7
+            0x01,                                           /* Device address */
+            MODBUS_READ_MULTIPLE,                           /* Read multi-segment register */
+            RENAC_REGION_COUNT,                             /* Number of regions to read */
+            0x29, 0x04,                                     /* Region #1 */
+            0x00, 0x1B,
+            0x29, 0xCC,                                     /* Region #2 */
+            0x00, 0x10,
+            0x2A, 0x30,                                     /* Region #3 */
+            0x00, 0x11,
+            0x2E, 0xE0,                                     /* Region #4 */
+            0x00, 0x06,
+            0xFF, 0xD7                                      /* CRC */
         };
 
         void RenacSolar::loop() {
@@ -44,10 +47,10 @@ namespace esphome {
                 return;
             m_last_send = 0;
             
-            // if (data.size() < 80) {
-            //     log_error(data);
-            //     return;
-            // }
+            if (data.size() < 80) {
+                log_error(data);
+                return;
+            }
 
             if (data[0] == MODBUS_READ_MULTIPLE)
                 parse_registers(data);
@@ -130,13 +133,13 @@ namespace esphome {
 
             auto read_temperature_info = [&](size_t off) {
                 update_sensor(m_ambient_temperature, read_reg16(off + 2, DECIMAL_ONE));
-                update_sensor(m_inverter_temperature, read_reg16(off + 4, DECIMAL_ONE));
+                update_sensor(m_inverter_temperature, read_reg16(off, DECIMAL_ONE));
             };
 
             auto region_count = data[1];
             for (size_t i = 0, j = 0; j < region_count; j++) {
                 auto start_address = read16(i + 2);
-                ESP_LOGI(TAG, "Reading region %ld/%ld: %04X", i + 1, region_count, start_address);
+                ESP_LOGV(TAG, "Reading region %ld/%ld: %04X", i + 1, region_count, start_address);
                 auto num_registers = read8(i + 4);
                 switch (start_address) {
                 case 0x2904:
@@ -147,6 +150,8 @@ namespace esphome {
                     break;
                 case 0x2ee0:
                     read_temperature_info(i + 5);
+                    break;
+                case 0x29cc:
                     break;
                 default:
                     ESP_LOGW(TAG, "Unknown register region offset: 0x%04X", start_address);
