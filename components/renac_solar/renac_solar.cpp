@@ -142,8 +142,8 @@ namespace esphome {
                 case 0x2904:
                     read_generic_info(i + 5);
                     break;
-                case 0x2a31:
-                    read_string_info(i + 5);
+                case 0x2a30:
+                    read_string_info(i + 7);
                     break;
                 case 0x2ee0:
                     read_temperature_info(i + 5);
