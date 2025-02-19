@@ -4,7 +4,7 @@
 namespace esphome {
     namespace renac_solar {
         static const char *TAG = "renac_solar";
-        static const uint8_t MODBUS_READ_MULTIPLE = 0x03;
+        static const uint8_t MODBUS_READ_MULTIPLE = 0x65;
         static const float DECIMAL_ONE = 0.1f;
         static const float DECIMAL_TWO = 0.01f;
         static const std::vector<uint8_t> MODBUS_PAYLOAD = {
@@ -49,10 +49,10 @@ namespace esphome {
             //     return;
             // }
 
-            if (data[0] == 0x04)
+            if (data[0] == MODBUS_READ_MULTIPLE)
                 parse_registers(data);
             else
-                ESP_LOGW(TAG, "Unknown response code: 0x%02X", data[1]);
+                ESP_LOGW(TAG, "Unknown response code: 0x%02X", data[0]);
         }
 
         void RenacSolar::log_error(const std::vector<uint8_t> &data) {
@@ -133,20 +133,20 @@ namespace esphome {
                 update_sensor(m_inverter_temperature, read_reg16(off + 4, DECIMAL_ONE));
             };
 
-            auto region_count = data[0];
+            auto region_count = data[1];
             size_t i = 0;
             while (i < region_count) {
-                auto start_address = read16(i + 1);
-                auto num_registers = read8(i + 3);
+                auto start_address = read16(i + 2);
+                auto num_registers = read8(i + 4);
                 switch (start_address) {
                 case 0x2904:
-                    read_generic_info(i + 4);
+                    read_generic_info(i + 5);
                     break;
                 case 0x2a31:
-                    read_string_info(i + 4);
+                    read_string_info(i + 5);
                     break;
                 case 0x2ee0:
-                    read_temperature_info(i + 4);
+                    read_temperature_info(i + 5);
                     break;
                 default:
                     ESP_LOGW(TAG, "Unknown register region offset: 0x%04X", start_address);
