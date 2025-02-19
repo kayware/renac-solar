@@ -98,11 +98,19 @@ namespace esphome {
             };
 
             auto read_reg16 = [&](size_t off, float unit) -> float {
+                return (int16_t)read16(off) * unit;
+            };
+
+            auto read_regU16 = [&](size_t off, float unit) -> float {
                 return read16(off) * unit;
             };
 
-            auto read_reg32 = [&](size_t off, float unit) -> float {
+            auto read_regU32 = [&](size_t off, float unit) -> float {
                 return encode_uint32(data[off], data[off + 1], data[off + 2], data[off + 3]) * unit;
+            };
+
+            auto read_reg32 = [&](size_t off, float unit) -> float {
+                return (int32_t)encode_uint32(data[off], data[off + 1], data[off + 2], data[off + 3]) * unit;
             };
 
             auto update_sensor = [&](Sensor *s, float value) {
@@ -111,11 +119,11 @@ namespace esphome {
             };
 
             auto read_generic_info = [&](size_t off) {
-                update_sensor(m_inverter_status, read_reg16(off + 0, 1));
-                update_sensor(m_today_production, read_reg16(off + 14, DECIMAL_ONE));
-                update_sensor(m_total_production, read_reg32(off + 18, DECIMAL_ONE));
+                update_sensor(m_inverter_status, read_regU16(off + 0, 1));
+                update_sensor(m_today_production, read_regU16(off + 14, DECIMAL_ONE));
+                update_sensor(m_total_production, read_regU32(off + 18, DECIMAL_ONE));
                 update_sensor(m_pv_active_power, read_reg32(off + 26, 1));
-                update_sensor(m_grid_frequency, read_reg16(off + 40, DECIMAL_TWO));
+                update_sensor(m_grid_frequency, read_regU16(off + 40, DECIMAL_TWO));
 
                 for (size_t j = 0; j < 3; j++) {
                     update_sensor(m_phases[j].m_voltage, read_reg16(off + 36 + j*6, DECIMAL_ONE));
