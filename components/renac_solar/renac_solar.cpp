@@ -137,6 +137,7 @@ namespace esphome {
             size_t i = 0;
             while (i < region_count) {
                 auto start_address = read16(i + 2);
+                ESP_LOGI(TAG, "Reading region %ld/%ld: %04X", i + 1, region_count, start_address);
                 auto num_registers = read8(i + 4);
                 switch (start_address) {
                 case 0x2904:
